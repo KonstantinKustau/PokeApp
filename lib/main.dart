@@ -36,30 +36,33 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("PokeApp"),
-        backgroundColor: Colors.cyan,
-      ),
-      body: OrientationBuilder(builder: (context, orientation) {
-        return Center(
-          child: Center(
-              child: FutureBuilder<PokeHub>(
-            future: getPokemonRequest(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return _mainWidgetGrid(orientation, snapshot.data);
-              } else if (snapshot.hasError) {
-                return Text("Internet error");
-              }
-              return CircularProgressIndicator();
-            },
-          )),
-        );
-      }),
-    );
+        appBar: AppBar(
+          title: Text("PokeApp"),
+          backgroundColor: Colors.cyan,
+        ),
+        body: _coreWidget());
   }
 
-  Widget _mainWidgetGrid(Orientation orientation, PokeHub pokeHub) {
+  Widget _coreWidget() {
+    return OrientationBuilder(builder: (context, orientation) {
+      return Center(
+        child: Center(
+            child: FutureBuilder<PokeHub>(
+          future: getPokemonRequest(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return _mainDisplayWidget(orientation, snapshot.data);
+            } else if (snapshot.hasError) {
+              return _notNetworkConnect();
+            }
+            return CircularProgressIndicator();
+          },
+        )),
+      );
+    });
+  }
+
+  Widget _mainDisplayWidget(Orientation orientation, PokeHub pokeHub) {
     return GridView.count(
       crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
       children: pokeHub.pokemon
@@ -98,5 +101,9 @@ class HomePageState extends State<HomePage> {
               )))
           .toList(),
     );
+  }
+
+  Widget _notNetworkConnect() {
+    return Text("Internet error");
   }
 }
