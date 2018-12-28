@@ -63,8 +63,27 @@ class HomePageState extends State<HomePage> {
   }
 
   Widget _mainDisplayWidget(Orientation orientation, PokeHub pokeHub) {
+    final double shortestSide = MediaQuery.of(context).size.shortestSide;
+    final bool useMobileLayout = shortestSide <= 600;
+    double itemImageHeight;
+    double itemImageWidth;
+    double cardFontSize;
+    int itemsInRow;
+
+    if (useMobileLayout) {
+      itemsInRow = orientation == Orientation.portrait ? 2 : 3;
+      itemImageHeight = 100.0;
+      itemImageWidth = 100.0;
+      cardFontSize = 20.0;
+    } else {
+      itemsInRow = orientation == Orientation.portrait ? 3 : 4;
+      itemImageHeight = 150.0;
+      itemImageWidth = 150.0;
+      cardFontSize = 26.0;
+    }
+
     return GridView.count(
-      crossAxisCount: orientation == Orientation.portrait ? 2 : 3,
+      crossAxisCount: itemsInRow,
       children: pokeHub.pokemon
           .map((pokeHub) => Padding(
               padding: const EdgeInsets.all(2.0),
@@ -85,15 +104,17 @@ class HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         Container(
-                          height: 100.0,
-                          width: 100.0,
+                          height: itemImageHeight,
+                          width: itemImageWidth,
                           decoration: BoxDecoration(
                               image: DecorationImage(
+                                  fit: BoxFit.fill,
                                   image: NetworkImage(pokeHub.img))),
                         ),
                         Text(pokeHub.name,
                             style: TextStyle(
-                                fontSize: 20.0, fontWeight: FontWeight.bold)),
+                                fontSize: cardFontSize,
+                                fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
